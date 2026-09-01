@@ -1,0 +1,44 @@
+filabridge/README.md
+  s_0a0c8e35653326::t_24300449631a31 1-18
+.github/scripts/reconcile-release.sh
+  s_0a0c8e35653326::t_0a4cfc8fb53afe 1-101
+tests/test_reconcile_release.py
+  s_0a0c8e35653326::t_e718861683a692 44-45
+  s_0a0c8e35653326::t_350ce6af152a98 1-43,46-190
+.gitignore
+  s_0a0c8e35653326::t_cdc99df2f392c9 1-2
+.github/workflows/lint.yaml
+  s_0a0c8e35653326::t_0a4cfc8fb53afe 1-46
+  s_0a0c8e35653326::t_cdc99df2f392c9 56-57
+  s_0a0c8e35653326::t_350ce6af152a98 47-55,58
+README.md
+  s_0a0c8e35653326::t_52251111712ef4 55
+  s_0a0c8e35653326::t_24300449631a31 1-54,56-157
+filabridge/DOCS.md
+  s_0a0c8e35653326::t_24300449631a31 1-81
+repository.yaml
+  s_0a0c8e35653326::t_24300449631a31 1-3
+.github/dependabot.yml
+  s_0a0c8e35653326::t_0a4cfc8fb53afe 1-7
+.github/workflows/sync-filabridge.yaml
+  s_0a0c8e35653326::t_fadc5fcbe342c8 86-90
+  s_0a0c8e35653326::t_0a4cfc8fb53afe 1-85,91-143
+filabridge/config.yaml
+  s_0a0c8e35653326::t_24300449631a31 1-35
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "3f0f47a86596ff7edc3df78c331fd9d3d65ddbc5",
+  "prompts": {},
+  "sessions": {
+    "s_0a0c8e35653326": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05f3d-7d8a-71c0-a2e3-1e929aca7287",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Ben Hale <nebhale@nebhale.com>"
+    }
+  }
+}
