@@ -1,0 +1,23 @@
+.github/scripts/reconcile-release.sh
+  s_0a0c8e35653326::t_2d837cf0c3b7da 17-21,24
+tests/test_reconcile_release.py
+  s_0a0c8e35653326::t_2d837cf0c3b7da 158-176
+filabridge/config.yaml
+  s_0a0c8e35653326::t_2d837cf0c3b7da 11-13
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "8012568715eeafc7087916acbaa7af928ae59899",
+  "prompts": {},
+  "sessions": {
+    "s_0a0c8e35653326": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05f3d-7d8a-71c0-a2e3-1e929aca7287",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Ben Hale <nebhale@nebhale.com>"
+    }
+  }
+}
