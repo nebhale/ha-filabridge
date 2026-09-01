@@ -1,0 +1,35 @@
+name: FilaBridge
+version: "1.3.0"
+slug: filabridge
+description: Bridge PrusaLink-compatible printers to Spoolman
+url: "https://github.com/nebhale/ha-filabridge"
+
+arch:
+  - amd64
+  - aarch64
+
+startup: application
+boot: auto
+stage: stable
+
+# Use FilaBridge's existing multi-architecture image. Home Assistant selects
+# the image tag from the version above.
+image: "ghcr.io/sargonas/filabridge"
+
+# The upstream image is not built with Home Assistant's io.hass.* labels.
+legacy: true
+
+# Store FilaBridge's SQLite database in Supervisor-managed persistent storage.
+environment:
+  FILABRIDGE_DB_PATH: "/data"
+
+ports:
+  5000/tcp: 5000
+
+ports_description:
+  5000/tcp: FilaBridge web interface
+
+webui: "http://[HOST]:[PORT:5000]"
+
+# Stop FilaBridge while Supervisor captures its SQLite database.
+backup: cold
