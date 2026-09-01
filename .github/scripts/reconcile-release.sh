@@ -14,18 +14,14 @@ fi
 TAG="v${VERSION}"
 IMAGE="ghcr.io/sargonas/filabridge:${VERSION}"
 
-# Locate the commit that introduced this exact manifest version. The workflow
-# reconciles the current version before moving forward, so this remains
-# recoverable even if a previous run stopped after pushing the commit.
-VERSION_COMMIT="$(
-  git log --reverse \
-    -S"version: \"${VERSION}\"" \
-    --format='%H' \
-    -- "${CONFIG_PATH}" | sed -n '1p'
-)"
+# The release belongs to the latest commit that changed the manifest for this
+# version. A later same-version manifest edit must therefore happen before the
+# tag is created; once published, the tag is immutable and reconciliation will
+# refuse to move it.
+VERSION_COMMIT="$(git log -1 --format='%H' -- "${CONFIG_PATH}")"
 
 if [[ -z "${VERSION_COMMIT}" ]]; then
-  echo "No commit introduces FilaBridge ${VERSION} in ${CONFIG_PATH}" >&2
+  echo "No commit contains FilaBridge ${VERSION} in ${CONFIG_PATH}" >&2
   exit 1
 fi
 

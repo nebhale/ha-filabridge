@@ -8,9 +8,9 @@ arch:
   - amd64
   - aarch64
 
-startup: application
-boot: auto
-stage: stable
+# Home Assistant's defaults provide startup: application, boot: auto, and
+# stage: stable. They are omitted because the App linter rejects explicit
+# declarations of default values.
 
 # Use FilaBridge's existing multi-architecture image. Home Assistant selects
 # the image tag from the version above.

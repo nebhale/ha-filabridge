@@ -155,6 +155,25 @@ class ReconcileReleaseTest(unittest.TestCase):
             self.git("rev-parse", "v1.3.0^{tag}").stdout.strip(), original_tag
         )
 
+    def test_tags_the_latest_same_version_manifest_commit(self) -> None:
+        config = self.repository / "filabridge" / "config.yaml"
+        config.write_text(
+            'name: FilaBridge\nversion: "1.3.0"\nlegacy: true\n',
+            encoding="utf-8",
+        )
+        self.git("add", "filabridge/config.yaml")
+        self.git("commit", "-m", "Correct App manifest")
+        corrected_commit = self.git("rev-parse", "HEAD").stdout.strip()
+        self.git("push", "origin", "main")
+
+        result = self.reconcile()
+
+        self.assertEqual(result.returncode, 0, result.stdout)
+        self.assertEqual(
+            self.git("rev-list", "-n", "1", "v1.3.0").stdout.strip(),
+            corrected_commit,
+        )
+
     def test_refuses_to_move_a_tag_on_the_wrong_commit(self) -> None:
         (self.repository / "README.md").write_text("# Changed\n", encoding="utf-8")
         self.git("add", "README.md")
