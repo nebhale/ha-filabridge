@@ -54,9 +54,6 @@ jobs:
         with:
           path: "./filabridge"
 
-      - name: Reconcile current tag and release
-        run: bash .github/scripts/reconcile-release.sh "${{ steps.current.outputs.version }}"
-
       - name: Find latest stable upstream release
         id: upstream
         env:
@@ -128,16 +125,44 @@ jobs:
         with:
           path: "./filabridge"
 
-      - name: Commit and push App update
+      - name: Commit, tag, and push App update
         if: steps.upstream.outputs.changed == 'true'
         env:
           VERSION: ${{ steps.upstream.outputs.version }}
         run: |
+          TAG="v${VERSION}"
+
           git add filabridge/config.yaml
           git diff --cached --check
           git commit -m "Update FilaBridge to ${VERSION}"
-          git push origin HEAD:main
+          git tag -a "${TAG}" -m "FilaBridge ${VERSION}"
+          git push --atomic origin HEAD:main "refs/tags/${TAG}"
 
-      - name: Reconcile updated tag and release
+      - name: Create GitHub Release
         if: steps.upstream.outputs.changed == 'true'
-        run: bash .github/scripts/reconcile-release.sh "${{ steps.upstream.outputs.version }}"
+        env:
+          TAG: ${{ steps.upstream.outputs.tag }}
+          VERSION: ${{ steps.upstream.outputs.version }}
+        run: |
+          IMAGE="ghcr.io/sargonas/filabridge:${VERSION}"
+          UPSTREAM_URL="https://github.com/sargonas/filabridge/releases/tag/${TAG}"
+          VERSION_COMMIT="$(git rev-parse HEAD)"
+
+          NOTES_FILE="$(mktemp)"
+          trap 'rm -f "${NOTES_FILE}"' EXIT
+
+          printf '%s\n\n' \
+            "Updates the Home Assistant App wrapper to FilaBridge ${VERSION}." \
+            "- Upstream release: ${UPSTREAM_URL}" \
+            "- Container image: \`${IMAGE}\`" \
+            "- Architectures: \`linux/amd64\`, \`linux/arm64\`" \
+            "- Wrapper commit: \`${VERSION_COMMIT}\`" \
+            "" \
+            "The container image and application binaries are published by the upstream FilaBridge project; this release contains only Home Assistant packaging metadata." \
+            >"${NOTES_FILE}"
+
+          gh release create "${TAG}" \
+            --repo "${GITHUB_REPOSITORY}" \
+            --verify-tag \
+            --title "FilaBridge ${VERSION}" \
+            --notes-file "${NOTES_FILE}"

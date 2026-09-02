@@ -44,15 +44,3 @@ jobs:
         uses: frenck/action-addon-linter@v2.21
         with:
           path: "./${{ matrix.path }}"
-
-  automation:
-    name: Test release automation
-    runs-on: ubuntu-latest
-    steps:
-      - name: Check out repository
-        uses: actions/checkout@v7.0.1
-
-      - name: Test release reconciliation
-        env:
-          PYTHONDONTWRITEBYTECODE: "1"
-        run: python3 -m unittest discover -s tests -v

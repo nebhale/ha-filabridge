@@ -94,13 +94,15 @@ http://127.0.0.1:5000/healthz
 
 The App version always matches the upstream container tag. An hourly workflow checks the latest stable FilaBridge release, verifies that the corresponding GHCR image contains both `linux/amd64` and `linux/arm64`, validates the App manifest, and then advances the version.
 
-Every automated update creates:
+When a newer stable upstream version is available, the workflow creates:
 
 1. A commit named `Update FilaBridge to <version>`.
 2. An annotated `v<version>` tag pointing to that exact commit.
 3. A published GitHub Release linking to the upstream release and image.
 
-The process is idempotent. A later run recreates a missing tag or release but refuses to move a tag that points at a different commit. Dependabot separately keeps the GitHub Actions used by this repository current.
+The commit and annotated tag are pushed atomically, then the workflow creates the GitHub Release. Runs where the upstream version has not changed do not inspect or modify existing tags and releases. Same-version wrapper and documentation changes remain ordinary, untagged commits and never move a published tag. If release creation fails after the Git push, the release is repaired manually.
+
+Dependabot separately keeps the GitHub Actions used by this repository current.
 
 ## Troubleshooting
 
