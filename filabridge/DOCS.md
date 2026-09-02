@@ -23,10 +23,10 @@ You need:
 If you installed Bytenoodle's **Spoolman-Ingress** App from its usual repository, try this internal URL:
 
 ```text
-http://20c49e40-spoolman-ingress:7912
+http://2c829f0e-spoolman-ingress:7912
 ```
 
-The repository identifier at the beginning of that hostname is installation-specific. Use your App's actual internal hostname if it differs. If Spoolman runs outside Home Assistant, use its normal LAN URL.
+The `2c829f0e` repository identifier is derived from Bytenoodle's repository URL. If your Spoolman App came from another repository, use that repository's identifier and the App's slug. If Spoolman runs outside Home Assistant, use its normal LAN URL.
 
 This App deliberately has no Home Assistant configuration options. FilaBridge manages its settings through its own Web UI and stores them in SQLite.
 

@@ -62,10 +62,10 @@ There are no options on the Home Assistant **Configuration** tab. That is intent
 FilaBridge will ask for a Spoolman URL and printer connection details. If you installed Bytenoodle's **Spoolman-Ingress** App from its usual repository, its internal URL is commonly:
 
 ```text
-http://20c49e40-spoolman-ingress:7912
+http://2c829f0e-spoolman-ingress:7912
 ```
 
-The `20c49e40` repository identifier is installation-specific. If your Spoolman App came from another repository, or Spoolman runs elsewhere, use that installation's internal hostname or normal LAN URL instead.
+The `2c829f0e` repository identifier is derived from Bytenoodle's repository URL. If your Spoolman App came from another repository, use that repository's identifier and the App's slug. If Spoolman runs elsewhere, use its normal LAN URL instead.
 
 For each printer, enter its LAN address, PrusaLink password/API key, and toolhead count. FilaBridge applies configuration changes immediately without restarting the App.
 
