@@ -1,0 +1,21 @@
+.github/workflows/sync-filabridge.yaml
+  s_2e4b9ba3cf917a::t_fa4cd4fc02a7ef 128,133-134,138-139,141,143-168
+README.md
+  s_2e4b9ba3cf917a::t_fa4cd4fc02a7ef 97,103-105
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "fc12a656d0c3cad6bd97ca1a7ee7c90efab3589d",
+  "prompts": {},
+  "sessions": {
+    "s_2e4b9ba3cf917a": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0637a-e352-74c0-bd71-91c85bf855f1",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Ben Hale <nebhale@nebhale.com>"
+    }
+  }
+}
