@@ -1,0 +1,25 @@
+filabridge/README.md
+  s_2687c41cb8ec59::t_6978ff5b9eebcd 13
+filabridge/config.yaml
+  s_2687c41cb8ec59::t_6978ff5b9eebcd 27
+README.md
+  s_2687c41cb8ec59::t_6978ff5b9eebcd 18,26,40,54,75,123
+filabridge/DOCS.md
+  s_2687c41cb8ec59::t_6978ff5b9eebcd 12,41
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "bbf52b9f10bd31e783b29844a0a0bec82521413b",
+  "prompts": {},
+  "sessions": {
+    "s_2687c41cb8ec59": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05faf-6c0a-7a00-ba0c-bca19a4942e3",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Ben Hale <nebhale@nebhale.com>"
+    }
+  }
+}
