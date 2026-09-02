@@ -1,0 +1,21 @@
+README.md
+  s_760fb6a3b9007c::t_e74237c34800b8 65,68
+filabridge/DOCS.md
+  s_760fb6a3b9007c::t_e74237c34800b8 26,29
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "8eba33b25ec4b6d59774d0fdf4bb7579ef315999",
+  "prompts": {},
+  "sessions": {
+    "s_760fb6a3b9007c": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a05fa2-f04c-7031-9929-11b7e84498bd",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Ben Hale <nebhale@nebhale.com>"
+    }
+  }
+}
