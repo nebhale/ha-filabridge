@@ -9,7 +9,7 @@ You need:
 - A reachable Spoolman server.
 - A PrusaLink-compatible printer with PrusaLink enabled.
 - The printer's LAN address and PrusaLink password/API key.
-- TCP port 5000 available on the Home Assistant host, or another host port selected on the App's **Network** tab.
+- TCP port 7913 available on the Home Assistant host, or another host port selected on the App's **Network** tab.
 
 ## First-run setup
 
@@ -38,7 +38,7 @@ Backups are cold: Home Assistant stops FilaBridge before snapshotting its data a
 
 ## Networking and security
 
-The Web UI is exposed directly on the Home Assistant host's port 5000 by default. You can select a different host port on the **Network** tab.
+The Web UI is exposed directly on the Home Assistant host's port 7913 by default. You can select a different host port on the **Network** tab.
 
 > [!WARNING]
 > FilaBridge has no built-in authentication. Anyone who can reach the Web UI can change its printer, Spoolman, and webhook settings. Keep the port on a trusted LAN and never forward it directly from the internet.

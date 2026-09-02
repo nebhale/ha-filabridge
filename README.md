@@ -15,7 +15,7 @@ This repository is the Home Assistant packaging, not a fork of FilaBridge. Home 
 - Native `amd64` and `aarch64` support, including Raspberry Pi 5.
 - Persistent FilaBridge configuration, toolhead mappings, and print history under the App's `/data` directory.
 - Cold backups so FilaBridge's SQLite database is stopped before Home Assistant snapshots it.
-- A direct Web UI link on port 5000.
+- A direct Web UI link on port 7913.
 - Automatic App updates when a stable upstream FilaBridge release and both supported images are available.
 - A matching Git commit, annotated tag, and GitHub Release for every automated version update.
 
@@ -23,7 +23,7 @@ This repository is the Home Assistant packaging, not a fork of FilaBridge. Home 
 
 ```mermaid
 flowchart LR
-    Browser[Web browser] -->|Trusted LAN :5000| FilaBridge
+    Browser[Web browser] -->|Trusted LAN :7913| FilaBridge
     Supervisor[Home Assistant Supervisor] -->|start, stop, logs, backup| FilaBridge[FilaBridge App]
     FilaBridge -->|SQLite| Data[(Persistent /data)]
     FilaBridge -->|Private App network or LAN| Spoolman[Spoolman]
@@ -37,7 +37,7 @@ FilaBridge can use any reachable Spoolman server. When both are Home Assistant A
 - Home Assistant OS or another supervised Home Assistant installation that supports Apps.
 - A Spoolman server reachable from the FilaBridge App.
 - A PrusaLink-compatible printer with PrusaLink enabled and its password/API key available.
-- A free TCP port on the Home Assistant host; this App uses port 5000 by default.
+- A free TCP port on the Home Assistant host; this App uses port 7913 by default.
 
 FilaBridge also contains experimental Bambu support. See the [upstream project](https://github.com/sargonas/filabridge) for its current status and requirements.
 
@@ -51,7 +51,7 @@ FilaBridge also contains experimental Bambu support. See the [upstream project](
    ```
 
 3. Find **FilaBridge** in the App store and select **Install**.
-4. If port 5000 is already in use, choose another host port on the App's **Network** tab.
+4. If port 7913 is already in use, choose another host port on the App's **Network** tab.
 5. Start the App and optionally enable **Start on boot** in Home Assistant.
 6. Select **Open Web UI** and complete FilaBridge's first-run configuration.
 
@@ -72,7 +72,7 @@ For each printer, enter its LAN address, PrusaLink password/API key, and toolhea
 ## Security
 
 > [!WARNING]
-> FilaBridge has no built-in authentication. Anyone who can reach its Web UI can change printer, Spoolman, and webhook settings. Keep port 5000 on a trusted LAN and do not expose it directly to the internet.
+> FilaBridge has no built-in authentication. Anyone who can reach its Web UI can change printer, Spoolman, and webhook settings. Keep port 7913 on a trusted LAN and do not expose it directly to the internet.
 
 For remote access, use a VPN or an authenticating reverse proxy. Home Assistant Ingress is intentionally not enabled in this initial wrapper because FilaBridge currently uses root-relative static, API, and WebSocket routes that require dedicated compatibility testing behind a path-prefixed proxy.
 
@@ -120,7 +120,7 @@ The process is idempotent. A later run recreates a missing tag or release but re
 
 - Check that the App is running and review its log.
 - Check the **Network** tab for the selected host port.
-- Resolve any conflict with another service using port 5000.
+- Resolve any conflict with another service using port 7913.
 - Make sure a firewall is not blocking the selected port on your trusted LAN.
 
 ### FilaBridge cannot reach Spoolman

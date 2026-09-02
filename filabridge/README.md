@@ -10,7 +10,7 @@ FilaBridge connects PrusaLink-compatible printers to Spoolman, maps physical spo
 - Persists all FilaBridge state in Home Assistant App storage.
 - Uses cold backups for consistent SQLite snapshots.
 - Connects to Spoolman over the private Home Assistant App network or your LAN.
-- Exposes the FilaBridge Web UI on port 5000 by default.
+- Exposes the FilaBridge Web UI on port 7913 by default.
 
 > [!WARNING]
 > FilaBridge has no built-in authentication. Do not expose its Web UI directly to the internet.

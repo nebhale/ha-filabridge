@@ -24,7 +24,7 @@ environment:
   FILABRIDGE_DB_PATH: "/data"
 
 ports:
-  5000/tcp: 5000
+  5000/tcp: 7913
 
 ports_description:
   5000/tcp: FilaBridge web interface
