@@ -1,0 +1,29 @@
+filabridge/README.md
+  s_33611a4300f7b0::t_20b4aab1eeded5 5
+README.md
+  s_33611a4300f7b0::t_20b4aab1eeded5 102
+filabridge/config.yaml
+  s_33611a4300f7b0::t_20b4aab1eeded5 2
+filabridge/CHANGELOG.md
+  s_33611a4300f7b0::t_20b4aab1eeded5 3,7-11
+filabridge/DOCS.md
+  s_33611a4300f7b0::t_20b4aab1eeded5 3
+.github/workflows/publish.yaml
+  s_33611a4300f7b0::t_0e5063b9dcdef5 24,26,28-29,45-66,69-70
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "3abc18503793191d82446ad14209c88e9c38d561",
+  "prompts": {},
+  "sessions": {
+    "s_33611a4300f7b0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0641b-0043-7830-a32c-0c28d8337c0f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Ben Hale <nebhale@nebhale.com>"
+    }
+  }
+}
