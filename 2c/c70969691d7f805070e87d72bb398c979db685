@@ -1,0 +1,46 @@
+filabridge/DOCS.md
+  s_33611a4300f7b0::t_0d5a6dfeee7167 3,16,40,43,45,49,56-57
+filabridge/config.yaml
+  s_33611a4300f7b0::t_842e140b1b192f 2
+  s_33611a4300f7b0::t_d035a0ab01debb 11-12,21-26
+filabridge/run.sh
+  s_33611a4300f7b0::t_d035a0ab01debb 1-24,40-48
+  s_33611a4300f7b0::t_b757ba2fba6f6c 25-39
+.github/workflows/sync-filabridge.yaml
+  s_33611a4300f7b0::t_842e140b1b192f 44-48,53-56,59-62,70,103,123,140,146,159
+  s_33611a4300f7b0::t_b757ba2fba6f6c 131-134,136,152,178
+README.md
+  s_33611a4300f7b0::t_0c3504b78cd872 100-102,126,158
+  s_33611a4300f7b0::t_baab8b9c7989e6 79
+  s_33611a4300f7b0::t_d3fa26c6c37be3 10,18-20,28-30,56-57,76,78,92,98-99,131-133,156,166
+  s_33611a4300f7b0::t_8b0731a82b04cd 80
+filabridge/Dockerfile
+  s_33611a4300f7b0::t_8b0731a82b04cd 13-20
+  s_33611a4300f7b0::t_d035a0ab01debb 1-2,4,7-12,21
+  s_33611a4300f7b0::t_b757ba2fba6f6c 3,5-6
+filabridge/README.md
+  s_33611a4300f7b0::t_0d5a6dfeee7167 5,13-16,19
+  s_33611a4300f7b0::t_0c3504b78cd872 3
+filabridge/CHANGELOG.md
+  s_33611a4300f7b0::t_842e140b1b192f 1-5
+  s_33611a4300f7b0::t_d035a0ab01debb 6-8
+filabridge/nginx.conf.template
+  s_33611a4300f7b0::t_8b0731a82b04cd 17-21
+  s_33611a4300f7b0::t_d035a0ab01debb 1-16,22-33
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "2cc70969691d7f805070e87d72bb398c979db685",
+  "prompts": {},
+  "sessions": {
+    "s_33611a4300f7b0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0641b-0043-7830-a32c-0c28d8337c0f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Ben Hale <nebhale@nebhale.com>"
+    }
+  }
+}
