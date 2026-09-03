@@ -1,8 +1,8 @@
 # FilaBridge
 
-Run [FilaBridge](https://github.com/sargonas/filabridge) as a managed Home Assistant App.
+Run the [FilaBridge PR #51](https://github.com/sargonas/filabridge/pull/51) test image as a managed Home Assistant App.
 
-FilaBridge connects PrusaLink-compatible printers to Spoolman, maps physical spools to printer toolheads, and automatically records filament consumption when prints finish. This App uses the official upstream multi-architecture image and adds Home Assistant lifecycle management, persistent storage, logs, backups, and an **Open Web UI** action.
+FilaBridge connects PrusaLink-compatible printers to Spoolman, maps physical spools to printer toolheads, and automatically records filament consumption when prints finish. This prerelease App wraps the public `ghcr.io/nebhale/filabridge:1.3.1-pr.51` multi-architecture image and adds Home Assistant lifecycle management, persistent storage, logs, backups, and native Ingress.
 
 ## Features
 
@@ -10,9 +10,12 @@ FilaBridge connects PrusaLink-compatible printers to Spoolman, maps physical spo
 - Persists all FilaBridge state in Home Assistant App storage.
 - Uses cold backups for consistent SQLite snapshots.
 - Connects to Spoolman over the private Home Assistant App network or your LAN.
-- Exposes the FilaBridge Web UI on port 7913 by default.
+- Opens the FilaBridge Web UI through Home Assistant Ingress and the sidebar.
+- Exposes no FilaBridge Web UI port on the Home Assistant host.
+- Discovers Supervisor's generated ingress URL and restores its stripped prefix
+  before forwarding to the PR build.
 
 > [!WARNING]
-> FilaBridge has no built-in authentication. Do not expose its Web UI directly to the internet.
+> FilaBridge has no built-in authentication. Keep it behind Home Assistant Ingress and do not publish its internal ports directly.
 
 See the **Documentation** tab after installation for setup and troubleshooting instructions.

@@ -41,13 +41,24 @@ jobs:
               filabridge/config.yaml
           )"
 
-          if [[ ! "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+          if [[ "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            PRERELEASE=false
+          elif [[ "${VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+-[0-9A-Za-z.-]+$ ]]; then
+            PRERELEASE=true
+          else
             echo "Invalid current App version: ${VERSION}" >&2
             exit 1
           fi
 
-          echo "version=${VERSION}" >>"${GITHUB_OUTPUT}"
+          {
+            echo "version=${VERSION}"
+            echo "prerelease=${PRERELEASE}"
+          } >>"${GITHUB_OUTPUT}"
           echo "Current App version: ${VERSION}"
+
+      - name: Preserve prerelease test version
+        if: steps.current.outputs.prerelease == 'true'
+        run: echo "Skipping stable upstream sync while testing ${{ steps.current.outputs.version }}"
 
       - name: Lint current App manifest
         uses: frenck/action-addon-linter@v2.21
@@ -56,6 +67,7 @@ jobs:
 
       - name: Find latest stable upstream release
         id: upstream
+        if: steps.current.outputs.prerelease != 'true'
         env:
           CURRENT_VERSION: ${{ steps.current.outputs.version }}
         run: |
@@ -88,7 +100,7 @@ jobs:
           echo "Latest stable upstream release: ${TAG}"
 
       - name: Verify upstream multi-architecture image
-        if: steps.upstream.outputs.changed == 'true'
+        if: steps.current.outputs.prerelease != 'true' && steps.upstream.outputs.changed == 'true'
         env:
           VERSION: ${{ steps.upstream.outputs.version }}
         run: |
@@ -108,7 +120,7 @@ jobs:
           ' <<<"${MANIFEST}" >/dev/null
 
       - name: Update App manifest
-        if: steps.upstream.outputs.changed == 'true'
+        if: steps.current.outputs.prerelease != 'true' && steps.upstream.outputs.changed == 'true'
         env:
           VERSION: ${{ steps.upstream.outputs.version }}
         run: |
@@ -116,30 +128,35 @@ jobs:
             "s/^version: \"[^\"]+\"$/version: \"${VERSION}\"/" \
             filabridge/config.yaml
 
+          sed -i -E \
+            "s|^FROM ghcr.io/[^/]+/filabridge:[^[:space:]]+$|FROM ghcr.io/sargonas/filabridge:${VERSION}|" \
+            filabridge/Dockerfile
+
           grep -qx "version: \"${VERSION}\"" filabridge/config.yaml
+          grep -qx "FROM ghcr.io/sargonas/filabridge:${VERSION}" filabridge/Dockerfile
           git diff --check
 
       - name: Lint updated App manifest
-        if: steps.upstream.outputs.changed == 'true'
+        if: steps.current.outputs.prerelease != 'true' && steps.upstream.outputs.changed == 'true'
         uses: frenck/action-addon-linter@v2.21
         with:
           path: "./filabridge"
 
       - name: Commit, tag, and push App update
-        if: steps.upstream.outputs.changed == 'true'
+        if: steps.current.outputs.prerelease != 'true' && steps.upstream.outputs.changed == 'true'
         env:
           VERSION: ${{ steps.upstream.outputs.version }}
         run: |
           TAG="v${VERSION}"
 
-          git add filabridge/config.yaml
+          git add filabridge/config.yaml filabridge/Dockerfile
           git diff --cached --check
           git commit -m "Update FilaBridge to ${VERSION}"
           git tag -a "${TAG}" -m "FilaBridge ${VERSION}"
           git push --atomic origin HEAD:main "refs/tags/${TAG}"
 
       - name: Create GitHub Release
-        if: steps.upstream.outputs.changed == 'true'
+        if: steps.current.outputs.prerelease != 'true' && steps.upstream.outputs.changed == 'true'
         env:
           TAG: ${{ steps.upstream.outputs.tag }}
           VERSION: ${{ steps.upstream.outputs.version }}
@@ -158,7 +175,7 @@ jobs:
             "- Architectures: \`linux/amd64\`, \`linux/arm64\`" \
             "- Wrapper commit: \`${VERSION_COMMIT}\`" \
             "" \
-            "The container image and application binaries are published by the upstream FilaBridge project; this release contains only Home Assistant packaging metadata." \
+            "The Home Assistant wrapper image is built from the container image and application binaries published by the upstream FilaBridge project." \
             >"${NOTES_FILE}"
 
           gh release create "${TAG}" \

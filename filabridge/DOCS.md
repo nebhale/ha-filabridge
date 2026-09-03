@@ -1,6 +1,6 @@
 # FilaBridge Home Assistant App
 
-This App runs the official `ghcr.io/sargonas/filabridge` container under Home Assistant Supervisor. FilaBridge connects supported printers to Spoolman and records filament consumption against the spools mapped to each toolhead.
+This prerelease App wraps `ghcr.io/nebhale/filabridge:1.3.1-pr.51`, a multi-architecture test image built from [FilaBridge PR #51](https://github.com/sargonas/filabridge/pull/51), with native Home Assistant Ingress. FilaBridge connects supported printers to Spoolman and records filament consumption against the spools mapped to each toolhead.
 
 ## Before starting
 
@@ -9,12 +9,11 @@ You need:
 - A reachable Spoolman server.
 - A PrusaLink-compatible printer with PrusaLink enabled.
 - The printer's LAN address and PrusaLink password/API key.
-- TCP port 7913 available on the Home Assistant host, or another host port selected on the App's **Network** tab.
 
 ## First-run setup
 
 1. Start the App.
-2. Select **Open Web UI**.
+2. Select **Open Web UI**, or enable **Show in sidebar** and open FilaBridge there.
 3. Choose **Start Configuration** in FilaBridge.
 4. Enter the Spoolman URL.
 5. Add the printer's name, LAN address, PrusaLink password/API key, and toolhead count.
@@ -38,24 +37,24 @@ Backups are cold: Home Assistant stops FilaBridge before snapshotting its data a
 
 ## Networking and security
 
-The Web UI is exposed directly on the Home Assistant host's port 7913 by default. You can select a different host port on the **Network** tab.
+The Web UI is available only through Home Assistant Ingress. No FilaBridge port is published on the Home Assistant host.
 
 > [!WARNING]
-> FilaBridge has no built-in authentication. Anyone who can reach the Web UI can change its printer, Spoolman, and webhook settings. Keep the port on a trusted LAN and never forward it directly from the internet.
+> FilaBridge has no built-in authentication. Keep it behind Home Assistant Ingress, where access requires a Home Assistant session, and do not expose its internal ports directly to an untrusted network.
 
-Use a VPN or authenticating reverse proxy for remote access. Home Assistant Ingress is not enabled in this version of the wrapper.
+The wrapper follows the Spoolman-Ingress design. On startup it reads the unique ingress URL from Supervisor, configures FilaBridge with that base path, and starts nginx on the ingress port. nginx restores the path prefix stripped by Supervisor and proxies HTTP and WebSocket traffic to FilaBridge on an internal port.
 
 ## Health check
 
-The upstream image checks `http://127.0.0.1:5000/healthz` inside the container. The endpoint also reports the running FilaBridge version.
+The inherited image health check requests `http://127.0.0.1:5000/healthz` inside the container. nginx forwards it to FilaBridge with the generated ingress prefix restored. The endpoint also reports the running FilaBridge version.
 
 ## Troubleshooting
 
 ### Web UI unavailable
 
 - Confirm the App is running and inspect its log.
-- Check the configured host port on the **Network** tab.
-- Resolve any port conflict on the Home Assistant host.
+- Confirm the log reports an ingress URL and a successful nginx start.
+- Reload the sidebar entry or use **Open Web UI** from the App page.
 
 ### Spoolman connection fails
 

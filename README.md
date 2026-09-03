@@ -7,7 +7,7 @@
 
 Run [FilaBridge](https://github.com/sargonas/filabridge) as a managed Home Assistant App. FilaBridge connects PrusaLink-compatible printers to [Spoolman](https://github.com/Donkie/Spoolman), tracks which spool is loaded on each toolhead, and records filament consumption when prints finish.
 
-This repository is the Home Assistant packaging, not a fork of FilaBridge. Home Assistant Supervisor pulls the official, multi-architecture `ghcr.io/sargonas/filabridge` image and supplies lifecycle management, persistent storage, backups, logs, and a convenient **Open Web UI** action. No derivative image is built or republished here.
+This repository is the Home Assistant packaging, not a fork of FilaBridge. This prerelease builds a thin Home Assistant wrapper on the public, multi-architecture `ghcr.io/nebhale/filabridge:1.3.1-pr.51` image from [FilaBridge PR #51](https://github.com/sargonas/filabridge/pull/51). The wrapper adds native Home Assistant Ingress using the same prefix-restoring proxy design as the Spoolman-Ingress App.
 
 ## What you get
 
@@ -15,7 +15,9 @@ This repository is the Home Assistant packaging, not a fork of FilaBridge. Home 
 - Native `amd64` and `aarch64` support, including Raspberry Pi 5.
 - Persistent FilaBridge configuration, toolhead mappings, and print history under the App's `/data` directory.
 - Cold backups so FilaBridge's SQLite database is stopped before Home Assistant snapshots it.
-- A direct Web UI link on port 7913.
+- Native Home Assistant Ingress with an optional FilaBridge sidebar entry.
+- No FilaBridge Web UI port exposed on the Home Assistant host.
+- Runtime discovery of Supervisor's generated ingress path for PR #51 testing.
 - Automatic App updates when a stable upstream FilaBridge release and both supported images are available.
 - A matching Git commit, annotated tag, and GitHub Release for every automated version update.
 
@@ -23,8 +25,9 @@ This repository is the Home Assistant packaging, not a fork of FilaBridge. Home 
 
 ```mermaid
 flowchart LR
-    Browser[Web browser] -->|Trusted LAN :7913| FilaBridge
-    Supervisor[Home Assistant Supervisor] -->|start, stop, logs, backup| FilaBridge[FilaBridge App]
+    Browser[Web browser] -->|Home Assistant session| Supervisor[Home Assistant Ingress]
+    Supervisor -->|stripped request path :5000| Nginx[nginx prefix restorer]
+    Nginx -->|generated ingress path :5001| FilaBridge[FilaBridge App]
     FilaBridge -->|SQLite| Data[(Persistent /data)]
     FilaBridge -->|Private App network or LAN| Spoolman[Spoolman]
     FilaBridge -->|PrusaLink over LAN| Printer[3D printer]
@@ -37,7 +40,6 @@ FilaBridge can use any reachable Spoolman server. When both are Home Assistant A
 - Home Assistant OS or another supervised Home Assistant installation that supports Apps.
 - A Spoolman server reachable from the FilaBridge App.
 - A PrusaLink-compatible printer with PrusaLink enabled and its password/API key available.
-- A free TCP port on the Home Assistant host; this App uses port 7913 by default.
 
 FilaBridge also contains experimental Bambu support. See the [upstream project](https://github.com/sargonas/filabridge) for its current status and requirements.
 
@@ -51,9 +53,8 @@ FilaBridge also contains experimental Bambu support. See the [upstream project](
    ```
 
 3. Find **FilaBridge** in the App store and select **Install**.
-4. If port 7913 is already in use, choose another host port on the App's **Network** tab.
-5. Start the App and optionally enable **Start on boot** in Home Assistant.
-6. Select **Open Web UI** and complete FilaBridge's first-run configuration.
+4. Start the App and optionally enable **Start on boot** and **Show in sidebar**.
+5. Select **Open Web UI** and complete FilaBridge's first-run configuration.
 
 There are no options on the Home Assistant **Configuration** tab. That is intentional: FilaBridge manages its own settings in the Web UI and persists them in its SQLite database.
 
@@ -72,9 +73,11 @@ For each printer, enter its LAN address, PrusaLink password/API key, and toolhea
 ## Security
 
 > [!WARNING]
-> FilaBridge has no built-in authentication. Anyone who can reach its Web UI can change printer, Spoolman, and webhook settings. Keep port 7913 on a trusted LAN and do not expose it directly to the internet.
+> FilaBridge has no built-in authentication. This App therefore exposes its Web UI only through Home Assistant Ingress, where access requires a Home Assistant session. Do not modify the wrapper to publish its internal ports directly to an untrusted network.
 
-For remote access, use a VPN or an authenticating reverse proxy. Home Assistant Ingress is intentionally not enabled in this initial wrapper because FilaBridge currently uses root-relative static, API, and WebSocket routes that require dedicated compatibility testing behind a path-prefixed proxy.
+At startup, the wrapper uses its Supervisor token to read the App's unique generated ingress URL. nginx accepts Supervisor's prefix-stripped requests on port 5000, restores that generated path, and forwards them to FilaBridge on the container-only port 5001. FilaBridge receives the same base path it uses to generate links, API routes, static assets, and WebSocket URLs.
+
+nginx accepts ingress traffic only from Supervisor and accepts localhost traffic for the inherited container health check.
 
 ## Persistence, backups, and restores
 
@@ -86,13 +89,17 @@ Restoring the App's data from a Home Assistant backup restores that database. Fi
 
 ## Health and updates
 
-The upstream image includes a container health check against:
+The inherited container health check requests:
 
 ```text
 http://127.0.0.1:5000/healthz
 ```
 
-The App version always matches the upstream container tag. An hourly workflow checks the latest stable FilaBridge release, verifies that the corresponding GHCR image contains both `linux/amd64` and `linux/arm64`, validates the App manifest, and then advances the version.
+During normal ingress operation that request reaches nginx and is forwarded to FilaBridge on port 5001 with the generated prefix restored. If Supervisor metadata is unavailable, the wrapper falls back to running FilaBridge directly on port 5000 for diagnostics.
+
+The App version always matches its container tag. Version `1.3.1-pr.51` uses the public fork image built from FilaBridge PR #51. While a prerelease version is configured, the hourly workflow validates the current manifest but intentionally skips stable upstream synchronization so the test image is not replaced during evaluation.
+
+For normal stable versions, the workflow checks the latest stable FilaBridge release, verifies that the corresponding GHCR image contains both `linux/amd64` and `linux/arm64`, validates the App manifest, and then advances the version.
 
 When a newer stable upstream version is available, the workflow creates:
 
@@ -116,14 +123,14 @@ Dependabot separately keeps the GitHub Actions used by this repository current.
 
 - Confirm the host architecture is `amd64` or `aarch64`.
 - Check Supervisor logs for an image-pull error.
-- Confirm the release's matching image tag exists in [upstream GHCR](https://github.com/sargonas/filabridge/pkgs/container/filabridge).
+- Confirm the test image tag exists in [the public fork package](https://github.com/users/nebhale/packages/container/package/filabridge).
 
 ### The Web UI does not open
 
 - Check that the App is running and review its log.
-- Check the **Network** tab for the selected host port.
-- Resolve any conflict with another service using port 7913.
-- Make sure a firewall is not blocking the selected port on your trusted LAN.
+- Confirm the log reports an ingress URL and a successful nginx start.
+- Reload the FilaBridge sidebar entry or use **Open Web UI** from the App page.
+- Restart the App if its generated ingress URL changed after a restore.
 
 ### FilaBridge cannot reach Spoolman
 
@@ -146,9 +153,9 @@ Dependabot separately keeps the GitHub Actions used by this repository current.
 
 ## Development and maintenance
 
-The repository contains no Dockerfile and performs no container build. Pull requests and pushes run the Home Assistant App linter. A daily lint run detects compatibility problems introduced by evolving App validation rules.
+The App Dockerfile builds a small Supervisor-managed wrapper around the selected FilaBridge image. It installs nginx, `curl`, and `jq`; the FilaBridge application itself remains supplied by the selected upstream or test image. Pull requests and pushes run the Home Assistant App linter. A daily lint run detects compatibility problems introduced by evolving App validation rules.
 
-The update workflow can also be started manually from the repository's **Actions** tab. It requires GitHub Actions **Read and write permissions** and permission to push commits and tags to `main`.
+The update workflow can also be started manually from the repository's **Actions** tab. It requires GitHub Actions **Read and write permissions** and permission to push commits and tags to `main`. Prerelease App versions are treated as deliberate test pins and are not replaced by this workflow.
 
 ## Support and attribution
 
@@ -156,4 +163,4 @@ The update workflow can also be started manually from the repository's **Actions
 - Problems with FilaBridge behavior: use the [upstream FilaBridge issue tracker](https://github.com/sargonas/filabridge/issues).
 - Problems with Spoolman: use the [Spoolman project](https://github.com/Donkie/Spoolman).
 
-This packaging repository is licensed under [Apache License 2.0](LICENSE). FilaBridge is a separate GPL-3.0 project distributed by its upstream maintainers. Installing this App causes Supervisor to download the upstream image directly; this repository does not redistribute it.
+This packaging repository is licensed under [Apache License 2.0](LICENSE). FilaBridge is a separate GPL-3.0 project distributed by its upstream maintainers. Installing this App builds a local wrapper image from the selected FilaBridge container; this repository does not publish a repackaged FilaBridge image.
