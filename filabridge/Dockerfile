@@ -1,3 +1,4 @@
+# FilaBridge application version; the wrapper version lives in config.yaml.
 FROM ghcr.io/nebhale/filabridge:1.3.1-pr.51
 
 USER root

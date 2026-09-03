@@ -2,12 +2,13 @@
 
 [![FilaBridge release](https://img.shields.io/github/v/release/nebhale/ha-filabridge?display_name=tag&sort=semver)](https://github.com/nebhale/ha-filabridge/releases)
 [![Lint](https://github.com/nebhale/ha-filabridge/actions/workflows/lint.yaml/badge.svg)](https://github.com/nebhale/ha-filabridge/actions/workflows/lint.yaml)
+[![Publish](https://github.com/nebhale/ha-filabridge/actions/workflows/publish.yaml/badge.svg)](https://github.com/nebhale/ha-filabridge/actions/workflows/publish.yaml)
 [![Architectures](https://img.shields.io/badge/architectures-amd64%20%7C%20aarch64-blue)](filabridge/config.yaml)
 [![License](https://img.shields.io/github/license/nebhale/ha-filabridge)](LICENSE)
 
 Run [FilaBridge](https://github.com/sargonas/filabridge) as a managed Home Assistant App. FilaBridge connects PrusaLink-compatible printers to [Spoolman](https://github.com/Donkie/Spoolman), tracks which spool is loaded on each toolhead, and records filament consumption when prints finish.
 
-This repository is the Home Assistant packaging, not a fork of FilaBridge. This prerelease builds a thin Home Assistant wrapper on the public, multi-architecture `ghcr.io/nebhale/filabridge:1.3.1-pr.51` image from [FilaBridge PR #51](https://github.com/sargonas/filabridge/pull/51). The wrapper adds native Home Assistant Ingress using the same prefix-restoring proxy design as the Spoolman-Ingress App.
+This repository publishes a thin, multi-architecture Home Assistant wrapper as `ghcr.io/nebhale/ha-filabridge`. The current prerelease builds on `ghcr.io/nebhale/filabridge:1.3.1-pr.51` from [FilaBridge PR #51](https://github.com/sargonas/filabridge/pull/51) and adds native Home Assistant Ingress using the same prefix-restoring proxy design as the Spoolman-Ingress App.
 
 ## What you get
 
@@ -18,6 +19,7 @@ This repository is the Home Assistant packaging, not a fork of FilaBridge. This 
 - Native Home Assistant Ingress with an optional FilaBridge sidebar entry.
 - No FilaBridge Web UI port exposed on the Home Assistant host.
 - Runtime discovery of Supervisor's generated ingress path for PR #51 testing.
+- Prebuilt, versioned wrapper images from GHCR for fast and repeatable installs.
 - Automatic App updates when a stable upstream FilaBridge release and both supported images are available.
 - A matching Git commit, annotated tag, and GitHub Release for every automated version update.
 
@@ -97,7 +99,7 @@ http://127.0.0.1:5000/healthz
 
 During normal ingress operation that request reaches nginx and is forwarded to FilaBridge on port 5001 with the generated prefix restored. If Supervisor metadata is unavailable, the wrapper falls back to running FilaBridge directly on port 5000 for diagnostics.
 
-The App version always matches its container tag. Version `1.3.1-pr.51` uses the public fork image built from FilaBridge PR #51. While a prerelease version is configured, the hourly workflow validates the current manifest but intentionally skips stable upstream synchronization so the test image is not replaced during evaluation.
+The App version always matches its published wrapper-image tag. Wrapper version `1.3.1-pr51-1` uses `ghcr.io/nebhale/filabridge:1.3.1-pr.51`, the public fork image built from FilaBridge PR #51. While a prerelease version is configured, the hourly workflow validates the current manifest but intentionally skips stable upstream synchronization so the test image is not replaced during evaluation.
 
 For normal stable versions, the workflow checks the latest stable FilaBridge release, verifies that the corresponding GHCR image contains both `linux/amd64` and `linux/arm64`, validates the App manifest, and then advances the version.
 
@@ -105,9 +107,10 @@ When a newer stable upstream version is available, the workflow creates:
 
 1. A commit named `Update FilaBridge to <version>`.
 2. An annotated `v<version>` tag pointing to that exact commit.
-3. A published GitHub Release linking to the upstream release and image.
+3. Published `amd64` and `aarch64` wrapper images and a multi-architecture manifest.
+4. A GitHub Release created only after the image is available.
 
-The commit and annotated tag are pushed atomically, then the workflow creates the GitHub Release. Runs where the upstream version has not changed do not inspect or modify existing tags and releases. Same-version wrapper and documentation changes remain ordinary, untagged commits and never move a published tag. If release creation fails after the Git push, the release is repaired manually.
+The update workflow pushes the commit and annotated tag atomically. The tag starts the publishing workflow, which verifies that the tag matches `config.yaml`, builds both architectures, publishes `ghcr.io/nebhale/ha-filabridge:<version>`, and then creates the GitHub Release. Runs where the upstream version has not changed do not inspect or modify existing tags and releases. Wrapper changes that affect the published image require a new App version and tag; published tags are never moved.
 
 Dependabot separately keeps the GitHub Actions used by this repository current.
 
@@ -123,7 +126,8 @@ Dependabot separately keeps the GitHub Actions used by this repository current.
 
 - Confirm the host architecture is `amd64` or `aarch64`.
 - Check Supervisor logs for an image-pull error.
-- Confirm the test image tag exists in [the public fork package](https://github.com/users/nebhale/packages/container/package/filabridge).
+- Confirm the App version exists in the public [`ha-filabridge` package](https://github.com/users/nebhale/packages/container/package/ha-filabridge).
+- Confirm its FilaBridge base image exists in the public [`filabridge` package](https://github.com/users/nebhale/packages/container/package/filabridge).
 
 ### The Web UI does not open
 
@@ -153,7 +157,9 @@ Dependabot separately keeps the GitHub Actions used by this repository current.
 
 ## Development and maintenance
 
-The App Dockerfile builds a small Supervisor-managed wrapper around the selected FilaBridge image. It installs nginx, `curl`, and `jq`; the FilaBridge application itself remains supplied by the selected upstream or test image. Pull requests and pushes run the Home Assistant App linter. A daily lint run detects compatibility problems introduced by evolving App validation rules.
+The App Dockerfile builds a small wrapper around the selected FilaBridge image. It installs nginx, `curl`, and `jq`; the FilaBridge application itself remains supplied by the selected upstream or test image. Every version tag builds and publishes both supported architectures through Home Assistant's official builder actions. Supervisor pulls the resulting multi-architecture image instead of building it on the Home Assistant host.
+
+Pull requests and pushes run the Home Assistant App linter. A daily lint run detects compatibility problems introduced by evolving App validation rules.
 
 The update workflow can also be started manually from the repository's **Actions** tab. It requires GitHub Actions **Read and write permissions** and permission to push commits and tags to `main`. Prerelease App versions are treated as deliberate test pins and are not replaced by this workflow.
 
@@ -163,4 +169,4 @@ The update workflow can also be started manually from the repository's **Actions
 - Problems with FilaBridge behavior: use the [upstream FilaBridge issue tracker](https://github.com/sargonas/filabridge/issues).
 - Problems with Spoolman: use the [Spoolman project](https://github.com/Donkie/Spoolman).
 
-This packaging repository is licensed under [Apache License 2.0](LICENSE). FilaBridge is a separate GPL-3.0 project distributed by its upstream maintainers. Installing this App builds a local wrapper image from the selected FilaBridge container; this repository does not publish a repackaged FilaBridge image.
+This packaging repository is licensed under [Apache License 2.0](LICENSE). FilaBridge is a separate GPL-3.0 project distributed by its upstream maintainers. The published wrapper image contains that upstream application together with this repository's Home Assistant ingress packaging.

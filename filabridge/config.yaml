@@ -1,5 +1,5 @@
 name: FilaBridge
-version: "1.3.1-pr.51"
+version: "1.3.1-pr51-1"
 slug: filabridge
 description: Bridge PrusaLink-compatible printers to Spoolman
 url: "https://github.com/nebhale/ha-filabridge"
@@ -7,6 +7,8 @@ url: "https://github.com/nebhale/ha-filabridge"
 arch:
   - amd64
   - aarch64
+
+image: "ghcr.io/nebhale/ha-filabridge"
 
 init: false
 

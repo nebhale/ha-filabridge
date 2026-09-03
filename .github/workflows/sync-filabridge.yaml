@@ -6,6 +6,7 @@ on:
   workflow_dispatch:
 
 permissions:
+  actions: write
   contents: write
 
 concurrency:
@@ -155,31 +156,28 @@ jobs:
           git tag -a "${TAG}" -m "FilaBridge ${VERSION}"
           git push --atomic origin HEAD:main "refs/tags/${TAG}"
 
-      - name: Create GitHub Release
+      # Pushes made with GITHUB_TOKEN do not emit another workflow run, so the
+      # updater explicitly dispatches the tag-based publisher.
+      - name: Dispatch App image publication
         if: steps.current.outputs.prerelease != 'true' && steps.upstream.outputs.changed == 'true'
         env:
           TAG: ${{ steps.upstream.outputs.tag }}
-          VERSION: ${{ steps.upstream.outputs.version }}
         run: |
-          IMAGE="ghcr.io/sargonas/filabridge:${VERSION}"
-          UPSTREAM_URL="https://github.com/sargonas/filabridge/releases/tag/${TAG}"
-          VERSION_COMMIT="$(git rev-parse HEAD)"
+          DISPATCHED=false
 
-          NOTES_FILE="$(mktemp)"
-          trap 'rm -f "${NOTES_FILE}"' EXIT
+          for ATTEMPT in 1 2 3 4 5; do
+            if gh workflow run publish.yaml \
+              --repo "${GITHUB_REPOSITORY}" \
+              --ref "${TAG}"; then
+              DISPATCHED=true
+              break
+            fi
 
-          printf '%s\n\n' \
-            "Updates the Home Assistant App wrapper to FilaBridge ${VERSION}." \
-            "- Upstream release: ${UPSTREAM_URL}" \
-            "- Container image: \`${IMAGE}\`" \
-            "- Architectures: \`linux/amd64\`, \`linux/arm64\`" \
-            "- Wrapper commit: \`${VERSION_COMMIT}\`" \
-            "" \
-            "The Home Assistant wrapper image is built from the container image and application binaries published by the upstream FilaBridge project." \
-            >"${NOTES_FILE}"
+            echo "Publish dispatch attempt ${ATTEMPT} failed; retrying" >&2
+            sleep 5
+          done
 
-          gh release create "${TAG}" \
-            --repo "${GITHUB_REPOSITORY}" \
-            --verify-tag \
-            --title "FilaBridge ${VERSION}" \
-            --notes-file "${NOTES_FILE}"
+          if [[ "${DISPATCHED}" != true ]]; then
+            echo "Could not dispatch image publication for ${TAG}" >&2
+            exit 1
+          fi
