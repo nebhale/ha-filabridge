@@ -1,6 +1,6 @@
 # FilaBridge Home Assistant App
 
-This prerelease App is distributed as the prebuilt, multi-architecture `ghcr.io/nebhale/ha-filabridge:1.3.1-pr51-1` image. It wraps `ghcr.io/nebhale/filabridge:1.3.1-pr.51`, built from [FilaBridge PR #51](https://github.com/sargonas/filabridge/pull/51), with native Home Assistant Ingress. FilaBridge connects supported printers to Spoolman and records filament consumption against the spools mapped to each toolhead.
+This prerelease App is distributed as the prebuilt, multi-architecture `ghcr.io/nebhale/ha-filabridge:1.3.1-pr51-2` image. It wraps `ghcr.io/nebhale/filabridge:1.3.1-pr.51`, built from [FilaBridge PR #51](https://github.com/sargonas/filabridge/pull/51), with native Home Assistant Ingress. FilaBridge connects supported printers to Spoolman and records filament consumption against the spools mapped to each toolhead.
 
 ## Before starting
 

@@ -2,7 +2,7 @@
 
 Run the [FilaBridge PR #51](https://github.com/sargonas/filabridge/pull/51) test image as a managed Home Assistant App.
 
-FilaBridge connects PrusaLink-compatible printers to Spoolman, maps physical spools to printer toolheads, and automatically records filament consumption when prints finish. This prerelease is distributed as the prebuilt `ghcr.io/nebhale/ha-filabridge:1.3.1-pr51-1` multi-architecture image. It wraps `ghcr.io/nebhale/filabridge:1.3.1-pr.51` and adds Home Assistant lifecycle management, persistent storage, logs, backups, and native Ingress.
+FilaBridge connects PrusaLink-compatible printers to Spoolman, maps physical spools to printer toolheads, and automatically records filament consumption when prints finish. This prerelease is distributed as the prebuilt `ghcr.io/nebhale/ha-filabridge:1.3.1-pr51-2` multi-architecture image. It wraps `ghcr.io/nebhale/filabridge:1.3.1-pr.51` and adds Home Assistant lifecycle management, persistent storage, logs, backups, and native Ingress.
 
 ## Features
 

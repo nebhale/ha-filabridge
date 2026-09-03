@@ -21,12 +21,12 @@ jobs:
     outputs:
       architectures: ${{ steps.info.outputs.architectures }}
       build_matrix: ${{ steps.matrix.outputs.matrix }}
-      description: ${{ steps.info.outputs.description }}
+      description: ${{ steps.normalize.outputs.description }}
       image_name: ${{ steps.normalize.outputs.image_name }}
-      name: ${{ steps.info.outputs.name }}
+      name: ${{ steps.normalize.outputs.name }}
       registry_prefix: ${{ steps.normalize.outputs.registry_prefix }}
-      url: ${{ steps.info.outputs.url }}
-      version: ${{ steps.info.outputs.version }}
+      url: ${{ steps.normalize.outputs.url }}
+      version: ${{ steps.normalize.outputs.version }}
     steps:
       - name: Check out tagged source
         uses: actions/checkout@v7.0.1
@@ -42,10 +42,32 @@ jobs:
         with:
           path: "./filabridge"
 
+      - name: Normalize App information
+        id: normalize
+        run: |
+          image=${{ steps.info.outputs.image }}
+          version=${{ steps.info.outputs.version }}
+          name=${{ steps.info.outputs.name }}
+          description=${{ steps.info.outputs.description }}
+          url=${{ steps.info.outputs.url }}
+
+          {
+            echo "image=${image}"
+            echo "image_name=${image##*/}"
+            echo "registry_prefix=${image%/*}"
+            echo "version=${version}"
+            echo "name=${name}"
+            echo "description=${description}"
+
+            if [[ -n "${url}" && "${url}" != null ]]; then
+              echo "url=${url}"
+            fi
+          } >>"${GITHUB_OUTPUT}"
+
       - name: Verify tag and image name
         env:
-          IMAGE: ${{ steps.info.outputs.image }}
-          VERSION: ${{ steps.info.outputs.version }}
+          IMAGE: ${{ steps.normalize.outputs.image }}
+          VERSION: ${{ steps.normalize.outputs.version }}
         run: |
           if [[ "${GITHUB_REF_NAME}" != "v${VERSION}" ]]; then
             echo "Tag ${GITHUB_REF_NAME} does not match App version ${VERSION}" >&2
@@ -56,16 +78,6 @@ jobs:
             echo "Unexpected App image: ${IMAGE}" >&2
             exit 1
           fi
-
-      - name: Normalize image name
-        id: normalize
-        env:
-          IMAGE: ${{ steps.info.outputs.image }}
-        run: |
-          {
-            echo "image_name=${IMAGE##*/}"
-            echo "registry_prefix=${IMAGE%/*}"
-          } >>"${GITHUB_OUTPUT}"
 
       - name: Prepare build matrix
         id: matrix

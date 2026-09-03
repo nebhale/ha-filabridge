@@ -1,9 +1,14 @@
 # Changelog
 
-## 1.3.1-pr51-1
+## 1.3.1-pr51-2
 
 - Publish the Home Assistant wrapper as a multi-architecture GHCR image.
 - Build each release image automatically from its matching Git tag.
+- Normalize Home Assistant App metadata before validating the release tag.
+
+## 1.3.1-pr51-1
+
+- Add the initial tag-driven wrapper-image publishing workflow.
 
 ## 1.3.1-pr.51
 

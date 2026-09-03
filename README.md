@@ -99,7 +99,7 @@ http://127.0.0.1:5000/healthz
 
 During normal ingress operation that request reaches nginx and is forwarded to FilaBridge on port 5001 with the generated prefix restored. If Supervisor metadata is unavailable, the wrapper falls back to running FilaBridge directly on port 5000 for diagnostics.
 
-The App version always matches its published wrapper-image tag. Wrapper version `1.3.1-pr51-1` uses `ghcr.io/nebhale/filabridge:1.3.1-pr.51`, the public fork image built from FilaBridge PR #51. While a prerelease version is configured, the hourly workflow validates the current manifest but intentionally skips stable upstream synchronization so the test image is not replaced during evaluation.
+The App version always matches its published wrapper-image tag. Wrapper version `1.3.1-pr51-2` uses `ghcr.io/nebhale/filabridge:1.3.1-pr.51`, the public fork image built from FilaBridge PR #51. While a prerelease version is configured, the hourly workflow validates the current manifest but intentionally skips stable upstream synchronization so the test image is not replaced during evaluation.
 
 For normal stable versions, the workflow checks the latest stable FilaBridge release, verifies that the corresponding GHCR image contains both `linux/amd64` and `linux/arm64`, validates the App manifest, and then advances the version.
 
