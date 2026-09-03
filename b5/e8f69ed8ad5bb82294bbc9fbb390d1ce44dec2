@@ -1,0 +1,42 @@
+filabridge/Dockerfile
+  s_33611a4300f7b0::t_1c2e12a6ce4666 1
+.github/workflows/publish.yaml
+  s_33611a4300f7b0::t_b0728d6964708d 22-29,47-48,63,74-76,79,81,88,98-99,101-102,105-107,109,124-128,139-140
+  s_33611a4300f7b0::t_f13f282e1cb77f 34-38
+  s_33611a4300f7b0::t_6ce3738ba892e1 1-6,12-21,30-33,39-46,49-62,64-73,77-78,80,82-87,89-97,100,103-104,108,110-123,129-138,141-178
+  s_33611a4300f7b0::t_fb9e67edbef1eb 7-11
+filabridge/README.md
+  s_33611a4300f7b0::t_b809479b321f31 5
+  s_33611a4300f7b0::t_0ab615459d67e5 10
+.github/workflows/sync-filabridge.yaml
+  s_33611a4300f7b0::t_fb9e67edbef1eb 9,159-161,166-183
+filabridge/CHANGELOG.md
+  s_33611a4300f7b0::t_b809479b321f31 3
+  s_33611a4300f7b0::t_1c2e12a6ce4666 4-7
+README.md
+  s_33611a4300f7b0::t_99c320705eb835 5,11,22
+  s_33611a4300f7b0::t_08a49cf043528e 110-111,113,129-130,160-162,172
+  s_33611a4300f7b0::t_b809479b321f31 102
+filabridge/DOCS.md
+  s_33611a4300f7b0::t_b809479b321f31 3
+filabridge/config.yaml
+  s_33611a4300f7b0::t_b809479b321f31 2
+  s_33611a4300f7b0::t_1c2e12a6ce4666 11
+  s_33611a4300f7b0::t_c1e14c457a5ecc 12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.0",
+  "base_commit_sha": "b5e8f69ed8ad5bb82294bbc9fbb390d1ce44dec2",
+  "prompts": {},
+  "sessions": {
+    "s_33611a4300f7b0": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a0641b-0043-7830-a32c-0c28d8337c0f",
+        "model": "gpt-5.6-sol"
+      },
+      "human_author": "Ben Hale <nebhale@nebhale.com>"
+    }
+  }
+}
