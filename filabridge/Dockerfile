@@ -1,5 +1,5 @@
 # FilaBridge application version; the wrapper version lives in config.yaml.
-FROM ghcr.io/nebhale/filabridge:1.3.1-pr.51
+FROM ghcr.io/sargonas/filabridge:1.4.0
 
 USER root
 RUN apk add --no-cache curl jq nginx
